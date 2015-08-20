@@ -18,6 +18,7 @@ public class MainActivity extends Activity {
         WebView myWebView = (WebView)findViewById(R.id.webView);
         myWebView.setWebViewClient(new WebViewClient());
         myWebView.loadUrl("http://cookpad.com/");
+        
     }
 
     @Override
