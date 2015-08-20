@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.view.KeyEvent;
 
 
 public class MainActivity extends Activity {
@@ -18,7 +19,16 @@ public class MainActivity extends Activity {
         WebView myWebView = (WebView)findViewById(R.id.webView);
         myWebView.setWebViewClient(new WebViewClient());
         myWebView.loadUrl("http://cookpad.com/");
-        
+
+    }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK) {
+            WebView webView = (WebView)findViewById(R.id.webView);
+            webView.goBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
