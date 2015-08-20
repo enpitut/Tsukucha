@@ -1,6 +1,6 @@
-<resources>
+﻿<resources>
     <string name="app_name">TsukuchaApp</string>
 
-    <string name="hello_world">お疲れ様です</string>
+    <string name="hello_world">branch test</string>
     <string name="action_settings">Settings</string>
 </resources>
