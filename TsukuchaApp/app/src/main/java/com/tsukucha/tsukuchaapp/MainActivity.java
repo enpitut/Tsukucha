@@ -10,16 +10,32 @@ import android.view.KeyEvent;
 
 
 public class MainActivity extends Activity {
+    WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        webView = (WebView)findViewById(R.id.webView);
+        webView.setWebViewClient(new WebViewClient());
+        webView.loadUrl("http://cookpad.com/");
+    }
 
-        WebView myWebView = (WebView)findViewById(R.id.webView);
-        myWebView.setWebViewClient(new WebViewClient());
-        myWebView.loadUrl("http://cookpad.com/");
-
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        switch (event.getKeyCode()) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    webView.pageUp(false);
+                    return true;
+                    }
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    webView.pageDown(false);
+                    return true;
+                    }
+                }
+        super.dispatchKeyEvent(event);
+        return false;
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
