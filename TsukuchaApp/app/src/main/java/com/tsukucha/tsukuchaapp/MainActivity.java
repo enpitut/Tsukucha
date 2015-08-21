@@ -2,23 +2,48 @@ package com.tsukucha.tsukuchaapp;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.view.KeyEvent;
+import android.widget.TextView;
+import android.graphics.Color;
 
 
 public class MainActivity extends Activity {
     WebView webView;
+    TextView textView;
+    MyCountDownTimer cdt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        textView = (TextView)findViewById(R.id.textView);
+        textView.setBackgroundColor(Color.argb(0,0,0,0));
         webView = (WebView)findViewById(R.id.webView);
         webView.setWebViewClient(new WebViewClient());
         webView.loadUrl("http://cookpad.com/");
+
+        cdt = new MyCountDownTimer(1200000, 1000);
+    }
+
+    public class MyCountDownTimer extends CountDownTimer {
+        public MyCountDownTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+            //textView.setBackgroundColor(Color.argb(255,255,0,0));
+        }
+
+        public void onFinish() {
+            textView.setText("");
+            textView.setBackgroundColor(Color.argb(0,0,0,0));
+        }
+
+        public void onTick(long millisUntilFinished) {
+            textView.setText(Long.toString(millisUntilFinished/1000/60) + ":" + Long.toString(millisUntilFinished/1000%60));
+        }
     }
 
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -32,6 +57,11 @@ public class MainActivity extends Activity {
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
                     webView.pageDown(false);
                     return true;
+                    }
+            case KeyEvent.KEYCODE_POWER:
+                if(event.getAction() == KeyEvent.ACTION_DOWN) {
+                    textView.setBackgroundColor(Color.argb(255,255,0,0));
+                    cdt.start();
                     }
                 }
         super.dispatchKeyEvent(event);

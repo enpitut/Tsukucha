@@ -10,4 +10,14 @@
         android:layout_height="fill_parent"
         android:id="@+id/webView" />
 
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView"
+        android:layout_alignBottom="@+id/webView"
+        android:layout_centerHorizontal="true"
+        android:textSize="30dp"
+        android:gravity="center"
+        android:background="#00000000" />
+
 </RelativeLayout>
