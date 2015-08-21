@@ -10,6 +10,7 @@ import android.webkit.WebViewClient;
 import android.view.KeyEvent;
 import android.widget.TextView;
 import android.graphics.Color;
+import android.view.WindowManager;
 
 
 public class MainActivity extends Activity {
@@ -20,6 +21,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Keep screen on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//      // Keep screen off
+//      getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         textView = (TextView)findViewById(R.id.textView);
         textView.setBackgroundColor(Color.argb(0,0,0,0));
@@ -60,10 +65,10 @@ public class MainActivity extends Activity {
                     }
             case KeyEvent.KEYCODE_POWER:
                 if(event.getAction() == KeyEvent.ACTION_DOWN) {
-                    textView.setBackgroundColor(Color.argb(255,255,0,0));
+                    textView.setBackgroundColor(Color.argb(255,255,0, 0));
                     cdt.start();
                     }
-                }
+        }
         super.dispatchKeyEvent(event);
         return false;
     }
