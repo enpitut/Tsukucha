@@ -2,6 +2,8 @@ package com.example.lin.handsfreerecipe;
 
 import java.util.ArrayList;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.os.CountDownTimer;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -34,12 +36,15 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     Intent recognizer;
     private String LOG_TAG = "HandsFreeRecipe"; //for debug info
     CountDownTimer mTimer = null; //timer
+    private AudioManager mAudioManager;
+    private int mStreamVolume = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //disable sleep
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         btnStart = (ToggleButton) findViewById(R.id.start_cooking);
         voiceRMS = (ProgressBar) findViewById(R.id.voice_rms);
         voiceRMS.setVisibility(View.INVISIBLE);
@@ -62,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     voiceRMS.setVisibility(View.VISIBLE);
                     voiceRMS.setIndeterminate(true);
                     lisener.startListening(recognizer);
+                    mStreamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                    mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
                 } else {
                     Log.d(LOG_TAG, "Stop Listening");
                     voiceRMS.setIndeterminate(false);
@@ -110,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
     @Override
     public void onReadyForSpeech(Bundle params) {
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mStreamVolume, 0);
         Log.i(LOG_TAG, "onReadyForSpeech:Cancel Timer");
         if(mTimer != null)
             mTimer.cancel();
