@@ -7,24 +7,13 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/info"
-        android:text="@string/weclome"
-        android:textSize="48dp"
-        android:textColor="#ff8c00"
-        android:gravity="center"
-        android:layout_marginBottom="20dp"/>
-
-    <ToggleButton
+    <Button
         android:id="@+id/start_cooking"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:textSize="36dp" />
+        android:textSize="36dp"
+        android:clickable="false" />
 
     <ProgressBar
         android:id="@+id/voice_rms"
@@ -33,7 +22,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/toggleButton1"
-        android:layout_marginTop="28dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp" />
 
@@ -42,16 +30,22 @@
         android:text="@string/what_you_said"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="48dp"
+        android:textSize="28dp"
         android:background="#dcdccf"
-        android:layout_margin="20dp" />
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp" />
 
-    <ListView
+    <TextView
         android:id="@+id/suggested_words"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="#fffff0"
         android:layout_weight="1"
-        android:layout_margin="20dp" />
+        android:layout_margin="20dp"
+        android:textSize="48dp"
+        android:text="Android is a mobile operating system (OS) based on the Linux kernel and currently developed by Google. With a user interface based on direct manipulation, Android is designed primarily for touchscreen mobile devices such as smartphones and tablet computers, with specialized user interfaces for televisions (Android TV), cars (Android Auto), and wrist watches (Android Wear). The OS uses touch inputs that loosely correspond to real-world actions, like swiping, tapping, pinching, and reverse pinching to manipulate on-screen objects, and a virtual keyboard. Despite being primarily designed for touchscreen input, it has also been used in game consoles, digital cameras, regular PCs, and other electronics. As of 2015, Android has the largest installed base of all operating systems.[11]"
+        android:maxLines = "10"
+        android:scrollbars = "vertical" />
 
 </LinearLayout>

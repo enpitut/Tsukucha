@@ -3,6 +3,6 @@
 
     <string name="what_you_said">You just said...</string>
     <string name="action_settings">Settings</string>
-    <string name="weclome">Press to start cooking!</string>
+    <string name="weclome">Press to speak</string>
     <string name="yoi_start">Start!!</string>
 </resources>
