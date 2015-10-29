@@ -2,7 +2,10 @@ package com.example.lin.handsfreerecipe;
 
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.CountDownTimer;
 import android.speech.RecognitionListener;
@@ -12,14 +15,20 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -33,7 +42,8 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     private Button btnStart;
     private TextView recognizedWord;
     private ProgressBar voiceRMS;
-    private TextView simpleList;
+    //private TextView simpleList;
+    private TextView textView2;
     private SpeechRecognizer speechRecognizer = null;
     private Intent recognizerIntent;
     private String LOG_TAG = "HandsFreeRecipe";
@@ -41,11 +51,24 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     private AudioManager mAudioManager;
     private int mStreamVolume = 0;
     private boolean started = false;
+    private WebView webView;
+    private MyCountDownTimer cdt;
+    final int MENU_TIMER = 0;
+    final int MENU_TIMER_STOP = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Keep screen on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        webView = (WebView)findViewById(R.id.webView);
+        webView.setWebViewClient(new WebViewClient());
+        webView.loadUrl("http://cookpad.com/");
+        cdt = new MyCountDownTimer(1200000, 1000);
+        textView2 = (TextView)findViewById(R.id.textView2);
+        textView2.setBackgroundColor(Color.argb(0,0,0,0));
         //The Button to switch start/end speech recognition
         btnStart = (Button) findViewById(R.id.start_cooking);
         btnStart.setText("Start cooking!");
@@ -55,8 +78,8 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         //The TextView to hold the recognized words
         recognizedWord = (TextView) findViewById(R.id.recognition_result);
         //The TextView to be tested scrolling on
-        simpleList = (TextView) findViewById(R.id.suggested_words);
-        simpleList.setMovementMethod(new ScrollingMovementMethod());
+        //simpleList = (TextView) findViewById(R.id.suggested_words);
+        //simpleList.setMovementMethod(new ScrollingMovementMethod());
         // Initialize the SpeechRecognizer object
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         speechRecognizer.setRecognitionListener(this);
@@ -96,10 +119,60 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     }
 
 
+    public class MyCountDownTimer extends CountDownTimer {
+        public MyCountDownTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        public void onFinish() {
+            clearTimer();
+        }
+
+        public void onTick(long millisUntilFinished) {
+            textView2.setText(Long.toString(millisUntilFinished/1000/60) + ":" + Long.toString(millisUntilFinished/1000%60));
+        }
+    }
+
+    public void clearTimer() {
+        textView2.setText("");
+        textView2.setBackgroundColor(Color.argb(0,0,0,0));
+    }
+
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        switch (event.getKeyCode()) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    webView.pageUp(false);
+                    return true;
+                }
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    webView.pageDown(false);
+                    return true;
+                }
+            case KeyEvent.KEYCODE_POWER:
+                if(event.getAction() == KeyEvent.ACTION_DOWN) {
+                    textView2.setBackgroundColor(Color.argb(255,255,0, 0));
+                    cdt.start();
+                }
+        }
+        super.dispatchKeyEvent(event);
+        return false;
+    }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK) {
+            WebView webView = (WebView)findViewById(R.id.webView);
+            webView.goBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        menu.add(0, MENU_TIMER, 0, "タイマー起動");
+        menu.add(0, MENU_TIMER_STOP, 0, "タイマー終了");
         return true;
     }
 
@@ -111,11 +184,38 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == MENU_TIMER) {
+            startTimer();
+            return true;
+        }
+        else if (id == MENU_TIMER_STOP) {
+            cdt.cancel();
+            clearTimer();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void startTimer() {
+        final EditText editView = new EditText(this);
+        editView.setInputType(InputType.TYPE_CLASS_NUMBER);
+        new AlertDialog.Builder(this)
+                .setTitle("タイマー（分）")
+                .setView(editView)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        int time = Integer.parseInt(editView.getText().toString());
+                        cdt = new MyCountDownTimer(time * 60000, 1000);
+                        cdt.start();
+                        textView2.setBackgroundColor(Color.argb(255, 255, 0, 0));
+                    }
+                })
+                .setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
     }
 
     @Override
@@ -189,22 +289,22 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         for (String result : matches){
             if(result.equals("上") || result.equals("うえ") || result.equals("up")){
                 text = "上にスクロール";
-                simpleList.scrollBy(0,-48);
+                //simpleList.scrollBy(0,-48);
                 break;
             }
             if(result.equals("下") || result.equals("した") || result.equals("down")){
                 text = "下にスクロール";
-                simpleList.scrollBy(0,48);
+                //simpleList.scrollBy(0,48);
                 break;
             }
             if(result.equals("左") || result.equals("ひだり")|| result.equals("left")){
                 text = "左にスクロール";
-                simpleList.scrollBy(-48, 0);
+                //simpleList.scrollBy(-48, 0);
                 break;
             }
             if(result.equals("右" )|| result.equals("みぎ") || result.equals("right")){
                 text = "右にスクロール";
-                simpleList.scrollBy(+48, 0);
+                //simpleList.scrollBy(+48, 0);
                 break;
             }
         }
