@@ -307,6 +307,15 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 //simpleList.scrollBy(+48, 0);
                 break;
             }
+            if(result.equals("タイマー") || result.equals("timer")){
+                startTimer();
+                break;
+            }
+            if(result.equals("リセット") || result.equals("reset")){
+                cdt.cancel();
+                clearTimer();
+                break;
+            }
         }
         recognizedWord.setText(text);
         btnStart.setText("Recognition finished");
