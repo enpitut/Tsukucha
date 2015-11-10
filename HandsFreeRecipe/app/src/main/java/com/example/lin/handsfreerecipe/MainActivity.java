@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     public void clearTimer() {
         textView2.setText("");
         textView2.setBackgroundColor(Color.argb(0,0,0,0));
+        recog_timer = false;
     }
 
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -350,7 +351,28 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     cdt = new MyCountDownTimer(minutes * 60000 + seconds * 1000, 1000);
                     cdt.start();
                     textView2.setBackgroundColor(Color.argb(255, 255, 0, 0));
-                    recog_timer = false;
+                    break;
+                }
+                if (result.equals("ストップ") || result.equals("stop")) {
+                    text = "一時停止";
+                    cdt.cancel();
+                    String stop_time = textView2.getText().toString();
+                    String[] stop_timers = stop_time.split(":", 0);
+                    minutes = Integer.parseInt(stop_timers[0]);
+                    seconds = Integer.parseInt(stop_timers[1]);
+                    String zero = "";
+                    if (seconds < 10)
+                        zero = "0";
+                    textView2.setText(Integer.toString(minutes) + ":" + zero + Integer.toString(seconds));
+                    textView2.setBackgroundColor(Color.argb(255, 0, 0, 255));
+                    break;
+                }
+                if (result.equals("リスタート") || result.equals("restart")) {
+                    text = "再開";
+                    cdt.cancel();
+                    cdt = new MyCountDownTimer(minutes * 60000 + seconds * 1000, 1000);
+                    cdt.start();
+                    textView2.setBackgroundColor(Color.argb(255, 255, 0, 0));
                     break;
                 }
             }
@@ -383,27 +405,6 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 text = "タイマー終了";
                 cdt.cancel();
                 clearTimer();
-                break;
-            }
-            if(result.equals("ストップ") || result.equals("stop")) {
-                text = "一時停止";
-                cdt.cancel();
-                String stop_time = textView2.getText().toString();
-                String[] stop_timers = stop_time.split(":", 0);
-                minutes = Integer.parseInt(stop_timers[0]);
-                seconds = Integer.parseInt(stop_timers[1]);
-                String zero = "";
-                if(seconds < 10)
-                    zero = "0";
-                textView2.setText(Integer.toString(minutes) + ":" + zero + Integer.toString(seconds));
-                textView2.setBackgroundColor(Color.argb(255, 0, 0, 255));
-                break;
-            }
-            if(result.equals("リスタート") || result.equals("restart")) {
-                text = "再開";
-                cdt = new MyCountDownTimer(minutes * 60000 + seconds * 1000, 1000);
-                cdt.start();
-                textView2.setBackgroundColor(Color.argb(255, 255, 0, 0));
                 break;
             }
         }
