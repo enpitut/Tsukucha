@@ -15,7 +15,7 @@
 
         <WebView
             android:layout_width="fill_parent"
-            android:layout_height="363dp"
+            android:layout_height="match_parent"
             android:id="@+id/webView"
             android:layout_weight="0.67" />
 
