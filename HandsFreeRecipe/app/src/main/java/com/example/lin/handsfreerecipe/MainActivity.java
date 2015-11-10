@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     public void onResume() {
         super.onResume();
 
-        soundPool = new SoundPool(1, AudioManager.STREAM_ALARM, 0);
+        soundPool = new SoundPool(1, AudioManager.STREAM_VOICE_CALL, 0);
         sound = soundPool.load(this, R.raw.timer_sound, 1);
     }
 
