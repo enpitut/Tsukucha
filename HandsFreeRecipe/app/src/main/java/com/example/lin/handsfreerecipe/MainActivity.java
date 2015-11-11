@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.CountDownTimer;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -53,8 +54,13 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     private boolean started = false;
     private WebView webView;
     private MyCountDownTimer cdt;
+    private Boolean recog_timer = false;
+    private int minutes = 0;
+    private int seconds = 0;
     final int MENU_TIMER = 0;
     final int MENU_TIMER_STOP = 1;
+    SoundPool soundPool;
+    private int sound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,17 +131,24 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         }
 
         public void onFinish() {
+            soundPool.play(sound, 1.0f, 1.0f, 0, 0, 1);
             clearTimer();
         }
 
         public void onTick(long millisUntilFinished) {
-            textView2.setText(Long.toString(millisUntilFinished/1000/60) + ":" + Long.toString(millisUntilFinished/1000%60));
+            String colon = "";
+            if(millisUntilFinished/1000%60 < 10)
+                colon = ":0";
+            else
+                colon = ":";
+            textView2.setText(Long.toString(millisUntilFinished/1000/60) + colon + Long.toString(millisUntilFinished/1000%60));
         }
     }
 
     public void clearTimer() {
         textView2.setText("");
         textView2.setBackgroundColor(Color.argb(0,0,0,0));
+        recog_timer = false;
     }
 
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -218,9 +231,21 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 .show();
     }
 
+    public void setTimer() {
+        final EditText editView = new EditText(this);
+        //editView.setInputType(InputType.TYPE_CLASS_NUMBER);
+        textView2.setBackgroundColor(Color.argb(255, 0, 0, 255));
+        textView2.setText("時間入力...");
+        recog_timer = true;
+    }
+
+
     @Override
     public void onResume() {
         super.onResume();
+
+        soundPool = new SoundPool(1, AudioManager.STREAM_VOICE_CALL, 0);
+        sound = soundPool.load(this, R.raw.timer_sound, 1);
     }
 
     protected void onPause() {
@@ -229,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             speechRecognizer.destroy();
             Log.i(LOG_TAG, "destroy");
         }
-
+        soundPool.release();
     }
 
     @Override
@@ -287,6 +312,70 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
         String text = "";
         for (String result : matches){
+            if(recog_timer) {
+                String[] character = result.split("");
+                int minutes_index = 0;
+                int seconds_index = 0;
+                for(int n=0; n<character.length; n++) {
+                    if(character[n].equals("分"))
+                        minutes_index = n;
+                    if(character[n].equals("秒"))
+                        seconds_index = n;
+                }
+                if(minutes_index != 0 || seconds_index != 0) {
+                    text = "時間入力";
+                    String minutes_string = "";
+                    String seconds_string = "";
+                    minutes = 0;
+                    seconds = 0;
+                    if(minutes_index != 0) {
+                        for (int n = 0; n < minutes_index; n++) {
+                            minutes_string += character[n];
+                        }
+                        minutes = Integer.parseInt(minutes_string);
+                    }
+                    if(seconds_index != 0) {
+                        for (int n = minutes_index + 1; n < seconds_index; n++) {
+                            seconds_string += character[n];
+                        }
+                        seconds = Integer.parseInt(seconds_string);
+                    }
+                    String zero = "";
+                    if(seconds < 10)
+                        zero = "0";
+                    textView2.setText(Integer.toString(minutes) + ":" + zero + Integer.toString(seconds));
+                    break;
+                }
+                if(result.equals("スタート") || result.equals("start")) {
+                    text = "タイマースタート";
+                    cdt = new MyCountDownTimer(minutes * 60000 + seconds * 1000, 1000);
+                    cdt.start();
+                    textView2.setBackgroundColor(Color.argb(255, 255, 0, 0));
+                    break;
+                }
+                if (result.equals("ストップ") || result.equals("stop")) {
+                    text = "一時停止";
+                    cdt.cancel();
+                    String stop_time = textView2.getText().toString();
+                    String[] stop_timers = stop_time.split(":", 0);
+                    minutes = Integer.parseInt(stop_timers[0]);
+                    seconds = Integer.parseInt(stop_timers[1]);
+                    String zero = "";
+                    if (seconds < 10)
+                        zero = "0";
+                    textView2.setText(Integer.toString(minutes) + ":" + zero + Integer.toString(seconds));
+                    textView2.setBackgroundColor(Color.argb(255, 0, 0, 255));
+                    break;
+                }
+                if (result.equals("リスタート") || result.equals("restart")) {
+                    text = "再開";
+                    cdt.cancel();
+                    cdt = new MyCountDownTimer(minutes * 60000 + seconds * 1000, 1000);
+                    cdt.start();
+                    textView2.setBackgroundColor(Color.argb(255, 255, 0, 0));
+                    break;
+                }
+            }
             if(result.equals("上") || result.equals("うえ") || result.equals("up")){
                 text = "上にスクロール";
                 //simpleList.scrollBy(0,-48);
@@ -305,6 +394,17 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             if(result.equals("右" )|| result.equals("みぎ") || result.equals("right")){
                 text = "右にスクロール";
                 //simpleList.scrollBy(+48, 0);
+                break;
+            }
+            if(result.equals("タイマー") || result.equals("timer")){
+                text = "タイマー起動";
+                setTimer();
+                break;
+            }
+            if(result.equals("リセット") || result.equals("reset")){
+                text = "タイマー終了";
+                cdt.cancel();
+                clearTimer();
                 break;
             }
         }
