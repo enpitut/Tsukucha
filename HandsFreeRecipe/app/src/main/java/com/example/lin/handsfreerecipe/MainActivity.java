@@ -289,22 +289,22 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         for (String result : matches){
             if(result.equals("上") || result.equals("うえ") || result.equals("up")){
                 text = "上にスクロール";
-                //simpleList.scrollBy(0,-48);
+                webView.scrollBy(0, -48);
                 break;
             }
             if(result.equals("下") || result.equals("した") || result.equals("down")){
                 text = "下にスクロール";
-                //simpleList.scrollBy(0,48);
+                webView.scrollBy(0,48);
                 break;
             }
             if(result.equals("左") || result.equals("ひだり")|| result.equals("left")){
                 text = "左にスクロール";
-                //simpleList.scrollBy(-48, 0);
+                webView.scrollBy(-48, 0);
                 break;
             }
             if(result.equals("右" )|| result.equals("みぎ") || result.equals("right")){
                 text = "右にスクロール";
-                //simpleList.scrollBy(+48, 0);
+                webView.scrollBy(48, 0);
                 break;
             }
         }
