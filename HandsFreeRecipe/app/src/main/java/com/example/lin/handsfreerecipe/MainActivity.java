@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         cdt = new MyCountDownTimer(1200000, 1000);
         textView2 = (TextView)findViewById(R.id.textView2);
         textView2.setBackgroundColor(Color.argb(0,0,0,0));
+        textView2.setTextColor(Color.WHITE);
         //The Button to switch start/end speech recognition
         btnStart = (Button) findViewById(R.id.start_cooking);
         btnStart.setText("Start cooking!");
