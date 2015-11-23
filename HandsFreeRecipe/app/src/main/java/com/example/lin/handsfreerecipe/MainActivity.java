@@ -14,6 +14,7 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -34,6 +35,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.Timer;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     private ProgressBar voiceRMS;
     //private TextView simpleList;
     private TextView textView2;
+    private TextView textView4;
     private SpeechRecognizer speechRecognizer = null;
     private Intent recognizerIntent;
     private String LOG_TAG = "HandsFreeRecipe";
@@ -53,14 +56,37 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     private int mStreamVolume = 0;
     private boolean started = false;
     private WebView webView;
+    private WebView webView2;
     private MyCountDownTimer cdt;
     private Boolean recog_timer = false;
     private int minutes = 0;
     private int seconds = 0;
     final int MENU_TIMER = 0;
     final int MENU_TIMER_STOP = 1;
+    final int MAKE_TAB = 2;
+    final int CHANGE_TAB = 3;
+    final int SELECT_SITE = 4;
+    final int CHANGE_SCROLL_VERTICAL = 5;
+    final int CHANGE_SCROLL_HORIZON = 6;
     SoundPool soundPool;
     private int sound;
+
+    private Button google;
+    private Button cookpad;
+    private Button rakuten;
+    private Button excite;
+    private int tab = 1;
+    private Boolean tab1 = false;
+    private Boolean tab2 = false;
+
+    private int width = 0;
+    private int height = 0;
+    private int scroll_Vertical = 300;
+    private int scroll_Horizon = 300;
+    private String[] items = new String[4];
+    private int[] list_vertical = new int[4];
+    private int[] list_horizon = new int[4];
+    private int vertical = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +97,22 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         webView = (WebView)findViewById(R.id.webView);
         webView.setWebViewClient(new WebViewClient());
-        webView.loadUrl("http://cookpad.com/");
+        webView.setVisibility(View.INVISIBLE);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setBuiltInZoomControls(true);
+        webView2 = (WebView)findViewById(R.id.webView2);
+        webView2.setWebViewClient(new WebViewClient());
+        webView2.setVisibility(View.INVISIBLE);
+        webView2.getSettings().setJavaScriptEnabled(true);
+        webView2.getSettings().setBuiltInZoomControls(true);
         cdt = new MyCountDownTimer(1200000, 1000);
         textView2 = (TextView)findViewById(R.id.textView2);
-        textView2.setBackgroundColor(Color.argb(0,0,0,0));
+        textView2.setBackgroundColor(Color.argb(0, 0, 0, 0));
         textView2.setTextColor(Color.WHITE);
+        textView4 = (TextView)findViewById(R.id.textView4);
+        textView4.setBackgroundColor(Color.argb(0, 20, 20, 20));
+        textView4.setTextColor(Color.BLACK);
+        textView4.setVisibility(View.INVISIBLE);
         //The Button to switch start/end speech recognition
         btnStart = (Button) findViewById(R.id.start_cooking);
         btnStart.setText("Start cooking!");
@@ -100,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                if(started == false){
+                if (started == false) {
                     btnStart.setText("Cooking...");
                     //Show the voice visualization
                     voiceRMS.setVisibility(View.VISIBLE);
@@ -110,8 +147,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     mStreamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                     mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
                     started = true;
-                }
-                else {
+                } else {
                     started = false;
                     recognizedWord.setText("You just said...");
                     btnStart.setText("Start cooking!");
@@ -123,8 +159,93 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 }
             }
         });
+
+        google = (Button)findViewById(R.id.google);
+        google.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(tab == 1) {
+                    create_tab1("http://www.google.co.jp/");
+                }
+                else if(tab == 2) {
+                    create_tab2("http://www.google.co.jp/");
+                }
+                invisible_button();
+            }
+        });
+
+        cookpad = (Button)findViewById(R.id.cookpad);
+        cookpad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(tab == 1) {
+                    create_tab1("http://cookpad.com/");
+                }
+                else if(tab == 2) {
+                    create_tab2("http://cookpad.com/");
+                }
+                invisible_button();
+            }
+        });
+
+        rakuten = (Button)findViewById(R.id.rakuten);
+        rakuten.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(tab == 1) {
+                    create_tab1("http://recipe.rakuten.co.jp/");
+                }
+                else if(tab == 2) {
+                    create_tab2("http://recipe.rakuten.co.jp/");
+                }
+                invisible_button();
+            }
+        });
+
+        excite = (Button)findViewById(R.id.excite);
+        excite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(tab == 1) {
+                    create_tab1("http://erecipe.woman.excite.co.jp/");
+                }
+                else if(tab == 2) {
+                    create_tab2("http://erecipe.woman.excite.co.jp/");
+                }
+                invisible_button();
+            }
+        });
     }
 
+    public void visible_button() {
+        google.setVisibility(View.VISIBLE);
+        cookpad.setVisibility(View.VISIBLE);
+        rakuten.setVisibility(View.VISIBLE);
+        excite.setVisibility(View.VISIBLE);
+    }
+
+    public void invisible_button() {
+        google.setVisibility(View.INVISIBLE);
+        cookpad.setVisibility(View.INVISIBLE);
+        rakuten.setVisibility(View.INVISIBLE);
+        excite.setVisibility(View.INVISIBLE);
+    }
+
+    public void create_tab1(String url) {
+        webView.loadUrl(url);
+        webView.setVisibility(View.VISIBLE);
+        tab1 = true;
+        textView4.setText("tab1");
+        textView4.setVisibility(View.VISIBLE);
+    }
+
+    public void create_tab2(String url) {
+        webView2.loadUrl(url);
+        webView2.setVisibility(View.VISIBLE);
+        tab2 = true;
+        textView4.setText("tab2");
+        textView4.setVisibility(View.VISIBLE);
+    }
 
     public class MyCountDownTimer extends CountDownTimer {
         public MyCountDownTimer(long millisInFuture, long countDownInterval) {
@@ -142,13 +263,13 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 colon = ":0";
             else
                 colon = ":";
-            textView2.setText(Long.toString(millisUntilFinished/1000/60) + colon + Long.toString(millisUntilFinished/1000%60));
+            textView2.setText(Long.toString(millisUntilFinished/1000/60) + colon + Long.toString(millisUntilFinished / 1000 % 60));
         }
     }
 
     public void clearTimer() {
         textView2.setText("");
-        textView2.setBackgroundColor(Color.argb(0,0,0,0));
+        textView2.setBackgroundColor(Color.argb(0, 0, 0, 0));
         recog_timer = false;
     }
 
@@ -183,10 +304,44 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         return super.onKeyDown(keyCode, event);
     }
 
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        width = findViewById(R.id.webView).getWidth();
+        height = findViewById(R.id.webView).getHeight();
+
+        items[0] = "1/4ページ";
+        items[1] = "半ページ";
+        items[2] = "１ページ弱";
+        items[3] = "１ページ";
+
+        list_vertical[0] = (int)((double)height*0.25);
+        list_vertical[1] = (int)((double)height*0.5);
+        list_vertical[2] = (int)((double)height*0.8);
+        list_vertical[3] = height;
+
+        list_horizon[0] = (int)((double)width*0.25);
+        list_horizon[1] = (int)((double)width*0.5);
+        list_horizon[2] = (int)((double)width*0.8);
+        list_horizon[3] = width;
+
+        SharedPreferences data = getSharedPreferences("DataSave", Context.MODE_PRIVATE);
+        int index = data.getInt("vertical_index", 300);
+        if(index == 300)
+            scroll_Vertical = 300;
+        else
+            scroll_Vertical = list_vertical[index];
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, MENU_TIMER, 0, "タイマー起動");
         menu.add(0, MENU_TIMER_STOP, 0, "タイマー終了");
+        menu.add(0, MAKE_TAB, 0, "タブ作成");
+        menu.add(0, CHANGE_TAB, 0, "タブ切り替え");
+        menu.add(0, SELECT_SITE, 0, "サイト選択");
+        menu.add(0, CHANGE_SCROLL_VERTICAL, 0, "上下スクロール量");
+        menu.add(0, CHANGE_SCROLL_HORIZON, 0, "左右スクロール量");
         return true;
     }
 
@@ -206,6 +361,76 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             cdt.cancel();
             clearTimer();
             return true;
+        }
+        else if (id == MAKE_TAB) {
+            if(!tab1) {
+                Toast.makeText(this, "please make tab1", Toast.LENGTH_LONG).show();
+            }
+            else if(!tab2) {
+                webView.setVisibility(View.INVISIBLE);
+                visible_button();
+                tab = 2;
+                textView4.setVisibility(View.INVISIBLE);
+            }
+            else if(tab2) {
+                Toast.makeText(this, "you can make 2 tabs", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else if (id == CHANGE_TAB) {
+            if(!tab2) {
+                Toast.makeText(this, "there is only tab1", Toast.LENGTH_SHORT).show();
+            }
+            else if(tab == 1) {
+                webView.setVisibility(View.INVISIBLE);
+                webView2.setVisibility(View.VISIBLE);
+                tab = 2;
+                textView4.setText("tab2");
+            }
+            else if(tab == 2) {
+                webView2.setVisibility(View.INVISIBLE);
+                webView.setVisibility(View.VISIBLE);
+                invisible_button();
+                tab = 1;
+                textView4.setText("tab1");
+            }
+        }
+        else if (id == SELECT_SITE) {
+            if(tab == 1) {
+                webView.setVisibility(View.INVISIBLE);
+                tab1 = false;
+                textView4.setVisibility(View.INVISIBLE);
+            }
+            else if(tab == 2) {
+                webView2.setVisibility(View.INVISIBLE);
+                tab2 = false;
+                textView4.setVisibility(View.INVISIBLE);
+            }
+            visible_button();
+        }
+        else if (id == CHANGE_SCROLL_VERTICAL) {
+            new AlertDialog.Builder(this)
+                    .setTitle("上下スクロール量の設定")
+                    .setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            scroll_Vertical = list_vertical[which];
+                            vertical = which;
+                            SharedPreferences data = getSharedPreferences("DataSave", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = data.edit();
+                            editor.putInt("vertical_index", which);
+                            editor.apply();
+                        }
+                    })
+                    .setPositiveButton("Close", null) .show();
+        }
+        else if (id == CHANGE_SCROLL_HORIZON) {
+            new AlertDialog.Builder(this)
+                    .setTitle("左右スクロール量の設定")
+                    .setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            scroll_Horizon = list_horizon[which];
+                        }
+                    })
+                    .setPositiveButton("Close", null) .show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -239,7 +464,6 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         textView2.setText("時間入力...");
         recog_timer = true;
     }
-
 
     @Override
     public void onResume() {
@@ -288,7 +512,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
     @Override
     public void onEndOfSpeech() {
-            Log.i(LOG_TAG, "onEndOfSpeech");
+        Log.i(LOG_TAG, "onEndOfSpeech");
             voiceRMS.setIndeterminate(true);
             speechRecognizer.stopListening();
     }
@@ -379,22 +603,34 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             }
             if(result.equals("上") || result.equals("うえ") || result.equals("up")){
                 text = "上にスクロール";
-                webView.scrollBy(0,-300);
+                if(tab == 1)
+                    webView.scrollBy(0,-scroll_Vertical);
+                else if(tab == 2)
+                    webView2.scrollBy(0,-scroll_Vertical);
                 break;
             }
             if(result.equals("下") || result.equals("した") || result.equals("down")){
                 text = "下にスクロール";
-                webView.scrollBy(0,300);
+                if(tab == 1)
+                    webView.scrollBy(0,scroll_Vertical);
+                else if(tab == 2)
+                    webView2.scrollBy(0,scroll_Vertical);
                 break;
             }
             if(result.equals("左") || result.equals("ひだり")|| result.equals("left")){
                 text = "左にスクロール";
-                webView.scrollBy(-300, 0);
+                if(tab == 1)
+                    webView.scrollBy(-scroll_Horizon,0);
+                else if(tab == 2)
+                    webView2.scrollBy(-scroll_Horizon,0);
                 break;
             }
             if(result.equals("右" )|| result.equals("みぎ") || result.equals("right")){
                 text = "右にスクロール";
-                webView.scrollBy(300, 0);
+                if(tab == 1)
+                    webView.scrollBy(scroll_Horizon,0);
+                else if(tab == 2)
+                    webView2.scrollBy(scroll_Horizon,0);
                 break;
             }
             if(result.equals("タイマー") || result.equals("timer")){
@@ -407,6 +643,75 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 cdt.cancel();
                 clearTimer();
                 break;
+            }
+            if(result.equals("タブ")) {
+                if(tab == 1) {
+                    if(!tab1) {
+                        text = "please make tab1";
+                    }
+                    else if(!tab2) {
+                        text = "make tab2";
+                        webView.setVisibility(View.INVISIBLE);
+                        visible_button();
+                        tab = 2;
+                    }
+                    else if(tab2) {
+                        text = "change tab2";
+                        webView.setVisibility(View.INVISIBLE);
+                        webView2.setVisibility(View.VISIBLE);
+                        tab = 2;
+                        textView4.setText("tab2");
+                    }
+                }
+                else if(tab == 2) {
+                    text = "change tab1";
+                    webView2.setVisibility(View.INVISIBLE);
+                    webView.setVisibility(View.VISIBLE);
+                    invisible_button();
+                    tab = 1;
+                    textView4.setText("tab1");
+                }
+            }
+            if(result.equals("拡大")) {
+                text = "拡大";
+                if(tab == 1)
+                    webView.zoomIn();
+                else if(tab == 2)
+                    webView2.zoomIn();
+            }
+            if (result.equals("縮小")) {
+                text = "縮小";
+                if(tab == 1)
+                    webView.zoomOut();
+                else if(tab == 2)
+                    webView2.zoomOut();
+            }
+            if (result.equals("増やす")) {
+                if(vertical != 3) {
+                    vertical++;
+                    scroll_Vertical = list_vertical[vertical];
+                    text = "上下スクロール量増加";
+                    SharedPreferences data = getSharedPreferences("DataSave", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = data.edit();
+                    editor.putInt("vertical_index", vertical);
+                    editor.apply();
+                }
+                else {
+                    text = "これ以上増えません";
+                }
+            }
+            if (result.equals("減らす")) {
+                if(vertical != 0) {
+                    vertical--;
+                    scroll_Vertical = list_vertical[vertical];
+                    text = "上下スクロール量減少";
+                    SharedPreferences data = getSharedPreferences("DataSave", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = data.edit();
+                    editor.putInt("vertical_index", vertical);
+                    editor.apply();
+                } else {
+                    text = "これ以上減りません";
+                }
             }
         }
         recognizedWord.setText(text);
