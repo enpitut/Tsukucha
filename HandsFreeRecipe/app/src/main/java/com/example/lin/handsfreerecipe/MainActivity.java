@@ -629,6 +629,11 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     webView2.scrollBy(scroll_Horizon,0);
                 break;
             }
+            if(result.equals("材料")) {
+                webView.findAll("材料");
+                text = "材料の位置に移動";
+                break;
+            }
             if(result.equals("タイマー") || result.equals("timer")){
                 if(!recog_timer) {
                     text = "タイマー起動";
