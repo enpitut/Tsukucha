@@ -1,24 +1,20 @@
 package com.example.lin.handsfreerecipe;
 
-import java.util.ArrayList;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -28,26 +24,19 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 import android.widget.Toast;
 
-import java.util.List;
-import java.util.Timer;
-import java.util.concurrent.CountDownLatch;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements RecognitionListener {
     private Button btnStart;
     private TextView recognizedWord;
     private ProgressBar voiceRMS;
-    //private TextView simpleList;
-    private TextView textView2;
-    private TextView textView4;
+    private TextView timeTextView;
+    private TextView tabTextView;
     private SpeechRecognizer speechRecognizer = null;
     private Intent recognizerIntent;
     private String LOG_TAG = "HandsFreeRecipe";
@@ -106,13 +95,13 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         webView2.getSettings().setJavaScriptEnabled(true);
         webView2.getSettings().setBuiltInZoomControls(true);
         cdt = new MyCountDownTimer(1200000, 1000);
-        textView2 = (TextView)findViewById(R.id.textView2);
-        textView2.setBackgroundColor(Color.argb(0, 0, 0, 0));
-        textView2.setTextColor(Color.WHITE);
-        textView4 = (TextView)findViewById(R.id.textView4);
-        textView4.setBackgroundColor(Color.argb(0, 20, 20, 20));
-        textView4.setTextColor(Color.BLACK);
-        textView4.setVisibility(View.INVISIBLE);
+        timeTextView = (TextView)findViewById(R.id.textView2);
+        timeTextView.setBackgroundColor(Color.argb(0, 0, 0, 0));
+        timeTextView.setTextColor(Color.WHITE);
+        tabTextView = (TextView)findViewById(R.id.textView4);
+        tabTextView.setBackgroundColor(Color.argb(0, 20, 20, 20));
+        tabTextView.setTextColor(Color.BLACK);
+        tabTextView.setVisibility(View.INVISIBLE);
         //The Button to switch start/end speech recognition
         btnStart = (Button) findViewById(R.id.start_cooking);
         btnStart.setText("Start cooking!");
@@ -121,9 +110,6 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         voiceRMS.setVisibility(View.INVISIBLE);
         //The TextView to hold the recognized words
         recognizedWord = (TextView) findViewById(R.id.recognition_result);
-        //The TextView to be tested scrolling on
-        //simpleList = (TextView) findViewById(R.id.suggested_words);
-        //simpleList.setMovementMethod(new ScrollingMovementMethod());
         // Initialize the SpeechRecognizer object
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         speechRecognizer.setRecognitionListener(this);
@@ -149,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     started = true;
                 } else {
                     started = false;
-                    recognizedWord.setText("You just said...");
+                    recognizedWord.setText("Please press the button above to begin.");
                     btnStart.setText("Start cooking!");
                     Log.d(LOG_TAG, "Stop Listening");
                     voiceRMS.setIndeterminate(false);
@@ -235,16 +221,16 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         webView.loadUrl(url);
         webView.setVisibility(View.VISIBLE);
         tab1 = true;
-        textView4.setText("tab1");
-        textView4.setVisibility(View.VISIBLE);
+        tabTextView.setText("tab1");
+        tabTextView.setVisibility(View.VISIBLE);
     }
 
     public void create_tab2(String url) {
         webView2.loadUrl(url);
         webView2.setVisibility(View.VISIBLE);
         tab2 = true;
-        textView4.setText("tab2");
-        textView4.setVisibility(View.VISIBLE);
+        tabTextView.setText("tab2");
+        tabTextView.setVisibility(View.VISIBLE);
     }
 
     public class MyCountDownTimer extends CountDownTimer {
@@ -263,13 +249,13 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 colon = ":0";
             else
                 colon = ":";
-            textView2.setText(Long.toString(millisUntilFinished/1000/60) + colon + Long.toString(millisUntilFinished / 1000 % 60));
+            timeTextView.setText(Long.toString(millisUntilFinished / 1000 / 60) + colon + Long.toString(millisUntilFinished / 1000 % 60));
         }
     }
 
     public void clearTimer() {
-        textView2.setText("");
-        textView2.setBackgroundColor(Color.argb(0, 0, 0, 0));
+        timeTextView.setText("");
+        timeTextView.setBackgroundColor(Color.argb(0, 0, 0, 0));
         recog_timer = false;
     }
 
@@ -287,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 }
             case KeyEvent.KEYCODE_POWER:
                 if(event.getAction() == KeyEvent.ACTION_DOWN) {
-                    textView2.setBackgroundColor(Color.argb(255,255,0, 0));
+                    timeTextView.setBackgroundColor(Color.argb(255, 255, 0, 0));
                     cdt.start();
                 }
         }
@@ -364,46 +350,46 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         }
         else if (id == MAKE_TAB) {
             if(!tab1) {
-                Toast.makeText(this, "please make tab1", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Please make tab1.", Toast.LENGTH_LONG).show();
             }
             else if(!tab2) {
                 webView.setVisibility(View.INVISIBLE);
                 visible_button();
                 tab = 2;
-                textView4.setVisibility(View.INVISIBLE);
+                tabTextView.setVisibility(View.INVISIBLE);
             }
             else if(tab2) {
-                Toast.makeText(this, "you can make 2 tabs", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "You can make 2 tabs.", Toast.LENGTH_SHORT).show();
             }
         }
         else if (id == CHANGE_TAB) {
             if(!tab2) {
-                Toast.makeText(this, "there is only tab1", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "There is tab1 only.", Toast.LENGTH_SHORT).show();
             }
             else if(tab == 1) {
                 webView.setVisibility(View.INVISIBLE);
                 webView2.setVisibility(View.VISIBLE);
                 tab = 2;
-                textView4.setText("tab2");
+                tabTextView.setText("tab2");
             }
             else if(tab == 2) {
                 webView2.setVisibility(View.INVISIBLE);
                 webView.setVisibility(View.VISIBLE);
                 invisible_button();
                 tab = 1;
-                textView4.setText("tab1");
+                tabTextView.setText("tab1");
             }
         }
         else if (id == SELECT_SITE) {
             if(tab == 1) {
                 webView.setVisibility(View.INVISIBLE);
                 tab1 = false;
-                textView4.setVisibility(View.INVISIBLE);
+                tabTextView.setVisibility(View.INVISIBLE);
             }
             else if(tab == 2) {
                 webView2.setVisibility(View.INVISIBLE);
                 tab2 = false;
-                textView4.setVisibility(View.INVISIBLE);
+                tabTextView.setVisibility(View.INVISIBLE);
             }
             visible_button();
         }
@@ -447,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                         int time = Integer.parseInt(editView.getText().toString());
                         cdt = new MyCountDownTimer(time * 60000, 1000);
                         cdt.start();
-                        textView2.setBackgroundColor(Color.argb(255, 255, 0, 0));
+                        timeTextView.setBackgroundColor(Color.argb(255, 255, 0, 0));
                     }
                 })
                 .setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
@@ -460,8 +446,8 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     public void setTimer() {
         final EditText editView = new EditText(this);
         //editView.setInputType(InputType.TYPE_CLASS_NUMBER);
-        textView2.setBackgroundColor(Color.argb(255, 0, 0, 255));
-        textView2.setText("時間入力...");
+        timeTextView.setBackgroundColor(Color.argb(255, 0, 0, 255));
+        timeTextView.setText("時間入力...");
         recog_timer = true;
     }
 
@@ -568,28 +554,28 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     String zero = "";
                     if(seconds < 10)
                         zero = "0";
-                    textView2.setText(Integer.toString(minutes) + ":" + zero + Integer.toString(seconds));
+                    timeTextView.setText(Integer.toString(minutes) + ":" + zero + Integer.toString(seconds));
                     break;
                 }
                 if(result.equals("スタート") || result.equals("start")) {
                     text = "タイマースタート";
                     cdt = new MyCountDownTimer(minutes * 60000 + seconds * 1000, 1000);
                     cdt.start();
-                    textView2.setBackgroundColor(Color.argb(255, 255, 0, 0));
+                    timeTextView.setBackgroundColor(Color.argb(255, 255, 0, 0));
                     break;
                 }
                 if (result.equals("ストップ") || result.equals("stop")) {
                     text = "一時停止";
                     cdt.cancel();
-                    String stop_time = textView2.getText().toString();
+                    String stop_time = timeTextView.getText().toString();
                     String[] stop_timers = stop_time.split(":", 0);
                     minutes = Integer.parseInt(stop_timers[0]);
                     seconds = Integer.parseInt(stop_timers[1]);
                     String zero = "";
                     if (seconds < 10)
                         zero = "0";
-                    textView2.setText(Integer.toString(minutes) + ":" + zero + Integer.toString(seconds));
-                    textView2.setBackgroundColor(Color.argb(255, 0, 0, 255));
+                    timeTextView.setText(Integer.toString(minutes) + ":" + zero + Integer.toString(seconds));
+                    timeTextView.setBackgroundColor(Color.argb(255, 0, 0, 255));
                     break;
                 }
                 if (result.equals("リスタート") || result.equals("restart")) {
@@ -597,7 +583,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     cdt.cancel();
                     cdt = new MyCountDownTimer(minutes * 60000 + seconds * 1000, 1000);
                     cdt.start();
-                    textView2.setBackgroundColor(Color.argb(255, 255, 0, 0));
+                    timeTextView.setBackgroundColor(Color.argb(255, 255, 0, 0));
                     break;
                 }
             }
@@ -660,7 +646,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                         webView.setVisibility(View.INVISIBLE);
                         webView2.setVisibility(View.VISIBLE);
                         tab = 2;
-                        textView4.setText("tab2");
+                        tabTextView.setText("tab2");
                     }
                 }
                 else if(tab == 2) {
@@ -669,7 +655,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     webView.setVisibility(View.VISIBLE);
                     invisible_button();
                     tab = 1;
-                    textView4.setText("tab1");
+                    tabTextView.setText("tab1");
                 }
             }
             if(result.equals("拡大")) {
@@ -712,6 +698,15 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 } else {
                     text = "これ以上減りません";
                 }
+            }
+            if (result.equals("完了")) {
+                started = false;
+                btnStart.setText("Start cooking!");
+                text = "料理完了！";
+                Log.d(LOG_TAG, "Cooking completed.");
+                voiceRMS.setIndeterminate(false);
+                voiceRMS.setVisibility(View.INVISIBLE);
+                speechRecognizer.stopListening();
             }
         }
         recognizedWord.setText(text);
