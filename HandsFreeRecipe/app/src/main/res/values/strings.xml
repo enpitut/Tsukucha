@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">HandsFreeRecipe</string>
 
-    <string name="what_you_said">You just said...</string>
+    <string name="press_to_begin">Press the button above to begin</string>
     <string name="action_settings">Settings</string>
-    <string name="weclome">Press to speak</string>
     <string name="yoi_start">Start!!</string>
+    <string name="tab_text">tab</string>
 </resources>

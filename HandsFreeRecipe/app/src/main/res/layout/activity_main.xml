@@ -16,8 +16,7 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.9" >
+            android:layout_height="match_parent">
 
             <WebView
                 android:layout_width="fill_parent"
@@ -29,8 +28,7 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/webView3"
-                android:textSize="28dp"
+                android:textSize="28sp"
                 android:background="#00000000"
                 android:gravity="center"
                 android:layout_marginLeft="20dp"
@@ -40,27 +38,23 @@
                 android:id="@+id/button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:textSize="36dp"
-                android:clickable="false"
-                android:layout_weight="0.05" />
+                android:textSize="36sp"
+                android:clickable="false" />
 
             <ProgressBar
                 style="?android:attr/progressBarStyleHorizontal"
                 android:id="@+id/progressBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/toggleButton1"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp" />
 
             <TextView
                 android:id="@+id/textView3"
-                android:text="@string/what_you_said"
+                android:text="@string/press_to_begin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="28dp"
+                android:textSize="28sp"
                 android:background="#dcdccf"
                 android:gravity="center_horizontal"
                 android:layout_marginLeft="20dp"
@@ -70,8 +64,7 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.9">
+            android:layout_height="match_parent">
 
             <WebView
                 android:layout_width="fill_parent"
@@ -83,8 +76,7 @@
                 android:id="@+id/textView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/webView"
-                android:textSize="28dp"
+                android:textSize="28sp"
                 android:background="#00000000"
                 android:gravity="center"
                 android:layout_marginLeft="20dp"
@@ -94,27 +86,23 @@
                 android:id="@+id/start_cooking"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:textSize="36dp"
-                android:clickable="false"
-                android:layout_weight="0.05" />
+                android:textSize="36sp"
+                android:clickable="false" />
 
             <ProgressBar
                 android:id="@+id/voice_rms"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/toggleButton1"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp" />
 
             <TextView
                 android:id="@+id/recognition_result"
-                android:text="@string/what_you_said"
+                android:text="@string/press_to_begin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="28dp"
+                android:textSize="28sp"
                 android:background="#dcdccf"
                 android:gravity="center_horizontal"
                 android:layout_marginLeft="20dp"
@@ -179,7 +167,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="tab"
+            android:text="@string/tab_text"
             android:id="@+id/textView4"
             android:layout_gravity="right" />
 

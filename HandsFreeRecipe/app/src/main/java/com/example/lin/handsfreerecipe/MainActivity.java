@@ -124,7 +124,9 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             @Override
             public void onClick(View arg0) {
                 if (started == false) {
-                    btnStart.setText("Cooking...");
+                    started = true;
+                    btnStart.setText("Stop cooking");
+                    recognizedWord.setText("Try speaking to scroll pages");
                     //Show the voice visualization
                     voiceRMS.setVisibility(View.VISIBLE);
                     voiceRMS.setIndeterminate(true);
@@ -132,16 +134,13 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     //Mute the sound effect while start listening
                     mStreamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                     mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
-                    started = true;
                 } else {
                     started = false;
-                    recognizedWord.setText("Please press the button above to begin.");
-                    btnStart.setText("Start cooking!");
+                    btnStart.setText("Start cooking");
                     Log.d(LOG_TAG, "Stop Listening");
                     voiceRMS.setIndeterminate(false);
                     voiceRMS.setVisibility(View.INVISIBLE);
                     speechRecognizer.stopListening();
-
                 }
             }
         });
@@ -701,12 +700,13 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             }
             if (result.equals("完了")) {
                 started = false;
-                btnStart.setText("Start cooking!");
-                text = "料理完了！";
+                btnStart.setText("Start cooking");
+                recognizedWord.setText("Press the button above to begin");
                 Log.d(LOG_TAG, "Cooking completed.");
                 voiceRMS.setIndeterminate(false);
                 voiceRMS.setVisibility(View.INVISIBLE);
                 speechRecognizer.stopListening();
+                return;
             }
         }
         recognizedWord.setText(text);
@@ -781,7 +781,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 @Override
                 public void onFinish() {
                     Log.d("Restart","Timer.onFinish: Time's up,restart listening");
-                    btnStart.setText("Cooking...");
+                    btnStart.setText("Stop cooking");
                     //Show the voice visualization
                     voiceRMS.setVisibility(View.VISIBLE);
                     voiceRMS.setIndeterminate(true);
