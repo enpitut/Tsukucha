@@ -15,6 +15,7 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        webView = (WebView)findViewById(R.id.webView);
+        webView = (WebView)findViewById(R.id.webView1);
         webView.setWebViewClient(new WebViewClient());
         webView.setVisibility(View.INVISIBLE);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -104,12 +105,15 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         tabTextView.setVisibility(View.INVISIBLE);
         //The Button to switch start/end speech recognition
         btnStart = (Button) findViewById(R.id.start_cooking);
-        btnStart.setText("Start cooking!");
+        btnStart.setText("料理開始");
         //The ProgressBar to visualize the voice
         voiceRMS = (ProgressBar) findViewById(R.id.voice_rms);
         voiceRMS.setVisibility(View.INVISIBLE);
         //The TextView to hold the recognized words
         recognizedWord = (TextView) findViewById(R.id.recognition_result);
+        /*recognizedWord.setSingleLine();
+        recognizedWord.setFocusableInTouchMode(true);
+        recognizedWord.setEllipsize(TextUtils.TruncateAt.MARQUEE);*/
         // Initialize the SpeechRecognizer object
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         speechRecognizer.setRecognitionListener(this);
@@ -125,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             public void onClick(View arg0) {
                 if (started == false) {
                     started = true;
-                    btnStart.setText("Stop cooking");
+                    btnStart.setText("料理完了");
                     recognizedWord.setText("Try speaking to scroll pages");
                     //Show the voice visualization
                     voiceRMS.setVisibility(View.VISIBLE);
@@ -136,7 +140,8 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
                 } else {
                     started = false;
-                    btnStart.setText("Start cooking");
+                    btnStart.setText("料理開始");
+                    recognizedWord.setText("Press the button above to begin");
                     Log.d(LOG_TAG, "Stop Listening");
                     voiceRMS.setIndeterminate(false);
                     voiceRMS.setVisibility(View.INVISIBLE);
@@ -282,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK) {
-            WebView webView = (WebView)findViewById(R.id.webView);
+            WebView webView = (WebView)findViewById(R.id.webView1);
             webView.goBack();
             return true;
         }
@@ -291,8 +296,8 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        width = findViewById(R.id.webView).getWidth();
-        height = findViewById(R.id.webView).getHeight();
+        width = findViewById(R.id.webView1).getWidth();
+        height = findViewById(R.id.webView1).getHeight();
 
         items[0] = "1/4ページ";
         items[1] = "半ページ";
@@ -316,6 +321,13 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         else
             scroll_Vertical = list_vertical[index];
 
+        //optimizeLayout();
+    }
+    public void optimizeLayout() {
+        google.setScaleY((float)(height*0.2)/google.getHeight());
+        cookpad.setScaleY((float)(height*0.2)/cookpad.getHeight());
+        rakuten.setScaleY((float)(height*0.2)/rakuten.getHeight());
+        excite.setScaleY((float)(height*0.2)/excite.getHeight());
     }
 
     @Override
@@ -619,8 +631,10 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 break;
             }
             if(result.equals("タイマー") || result.equals("timer")){
-                text = "タイマー起動";
-                setTimer();
+                if(!recog_timer) {
+                    text = "タイマー起動";
+                    setTimer();
+                }
                 break;
             }
             if(result.equals("リセット") || result.equals("reset")){
@@ -700,7 +714,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             }
             if (result.equals("完了")) {
                 started = false;
-                btnStart.setText("Start cooking");
+                btnStart.setText("料理完了");
                 recognizedWord.setText("Press the button above to begin");
                 Log.d(LOG_TAG, "Cooking completed.");
                 voiceRMS.setIndeterminate(false);
@@ -710,7 +724,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             }
         }
         recognizedWord.setText(text);
-        btnStart.setText("Recognition finished");
+        btnStart.setText("認識完了");
         //Start listening again
         Log.i(LOG_TAG, "OnResults:Start listening again");
         if(mTimer != null)
@@ -781,7 +795,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 @Override
                 public void onFinish() {
                     Log.d("Restart","Timer.onFinish: Time's up,restart listening");
-                    btnStart.setText("Stop cooking");
+                    btnStart.setText("料理終了");
                     //Show the voice visualization
                     voiceRMS.setVisibility(View.VISIBLE);
                     voiceRMS.setIndeterminate(true);
@@ -794,6 +808,4 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         }
         mTimer.start();
     }
-
-
 }

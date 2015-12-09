@@ -25,7 +25,7 @@
                 android:layout_weight="0.6" />
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/textView2_dammy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="28sp"
@@ -35,7 +35,7 @@
                 android:layout_marginRight="20dp" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/start_cooking_dammy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="36sp"
@@ -43,14 +43,14 @@
 
             <ProgressBar
                 style="?android:attr/progressBarStyleHorizontal"
-                android:id="@+id/progressBar"
+                android:id="@+id/voice_rms_dammy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp" />
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/recognition_result_dammy"
                 android:text="@string/press_to_begin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
             <WebView
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/webView"
+                android:id="@+id/webView1"
                 android:layout_weight="0.6" />
 
             <TextView
@@ -80,7 +80,7 @@
                 android:background="#00000000"
                 android:gravity="center"
                 android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"/>
+                android:layout_marginRight="20dp" />
 
             <Button
                 android:id="@+id/start_cooking"
@@ -90,8 +90,8 @@
                 android:clickable="false" />
 
             <ProgressBar
-                android:id="@+id/voice_rms"
                 style="?android:attr/progressBarStyleHorizontal"
+                android:id="@+id/voice_rms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
@@ -117,7 +117,7 @@
             <Button
                 android:id="@+id/google"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="60dp"
                 android:paddingRight="20dp"
                 android:paddingLeft="15dp"
                 android:paddingTop="15dp"
@@ -129,7 +129,7 @@
             <Button
                 android:id="@+id/cookpad"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="60dp"
                 android:paddingRight="20dp"
                 android:paddingLeft="15dp"
                 android:paddingTop="15dp"
@@ -141,7 +141,7 @@
             <Button
                 android:id="@+id/rakuten"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="60dp"
                 android:paddingRight="20dp"
                 android:paddingLeft="15dp"
                 android:paddingTop="15dp"
@@ -153,7 +153,7 @@
             <Button
                 android:id="@+id/excite"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="60dp"
                 android:paddingRight="20dp"
                 android:paddingLeft="15dp"
                 android:paddingTop="15dp"
