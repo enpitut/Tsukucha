@@ -723,7 +723,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             }
             if (result.equals("完了")) {
                 started = false;
-                btnStart.setText("料理完了");
+                btnStart.setText("料理開始");
                 recognizedWord.setText("Press the button above to begin");
                 Log.d(LOG_TAG, "Cooking completed.");
                 voiceRMS.setIndeterminate(false);
@@ -803,7 +803,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 @Override
                 public void onFinish() {
                     Log.d("Restart","Timer.onFinish: Time's up,restart listening");
-                    btnStart.setText("料理終了");
+                    btnStart.setText("料理完了");
                     //Show the voice visualization
                     voiceRMS.setVisibility(View.VISIBLE);
                     voiceRMS.setIndeterminate(true);
