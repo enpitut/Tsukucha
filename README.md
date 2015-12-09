@@ -11,7 +11,8 @@
 ライトウェイトコース（分散PBL参加）
 
 # プロダクト
-<img src="./img/Product Icon.JPG" width="200px">
+## ハンズフリーレシピ(Hands Free Recipe)
+## <img src="./img/Product Icon.JPG" width="200px">
 
 ## 概要
 **声でレシピページをスクロールできるアンドロイドアプリです。**
