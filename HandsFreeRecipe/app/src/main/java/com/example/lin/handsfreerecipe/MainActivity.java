@@ -15,7 +15,6 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -724,7 +723,6 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             }
         }
         recognizedWord.setText(text);
-        btnStart.setText("認識完了");
         //Start listening again
         Log.i(LOG_TAG, "OnResults:Start listening again");
         if(mTimer != null)
