@@ -11,7 +11,7 @@
 ライトウェイトコース（分散PBL参加）
 
 # プロダクト
-<img src="./img/Product icon.png" width="200px">
+<img src="./img/Product icon.jpg" width="200px">
 
 ## 概要
 **声でレシピページをスクロールできるアンドロイドアプリです。**
